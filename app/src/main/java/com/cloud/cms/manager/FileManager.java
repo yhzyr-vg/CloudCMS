@@ -1,14 +1,11 @@
-package com.steven.download.utils;
+package com.cloud.cms.manager;
 
 import android.content.Context;
 
 import java.io.File;
 
 /**
- * Description:
- * Data：3/21/2018-1:44 PM
- *
- * @author: yanzhiwen
+ * Description:文件管理
  */
 public class FileManager {
     private static final FileManager INSTANCE = new FileManager();
@@ -43,7 +40,7 @@ public class FileManager {
      * @return
      */
     public File getFile(String url) {
-        String fileName = Utils.md5Url(url);
+        String fileName = url.substring(url.lastIndexOf("/") + 1);
         if (mRootDir == null) {
             mRootDir = mContext.getCacheDir();
         }

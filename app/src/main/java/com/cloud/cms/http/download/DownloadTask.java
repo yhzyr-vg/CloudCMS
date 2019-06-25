@@ -1,8 +1,6 @@
-package com.steven.download.download;
+package com.cloud.cms.http.download;
 
 import android.util.Log;
-
-import com.steven.download.download.db.DownloadEntity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,14 +10,12 @@ import java.util.List;
  * Description:每个apk的下载，这个类需要复用的
  * Data：4/19/2018-1:45 PM
  *
- * @author: yanzhiwen
  */
 public class DownloadTask {
     private static final String TAG = "DownloadTask";
-    //文件下载的url
-    private String url;
-    //文件的名称
-    private String name;
+    //文件下载的item
+    private DownloadItem downloadItem;
+
     //文件的大小
     private long mContentLength;
     //下载文件的线程的个数
@@ -33,9 +29,8 @@ public class DownloadTask {
     private DownloadCallback mDownloadCallback;
 
 
-    public DownloadTask(String name, String url, int threadSize, long contentLength, DownloadCallback callBack) {
-        this.name = name;
-        this.url = url;
+    public DownloadTask(DownloadItem downloadItem, int threadSize, long contentLength, DownloadCallback callBack) {
+        this.downloadItem = downloadItem;
         this.mThreadSize = threadSize;
         this.mContentLength = contentLength;
         this.mDownloadRunnables = new ArrayList<>();
@@ -55,13 +50,13 @@ public class DownloadTask {
                 end = mContentLength ;
             }
 
-            List<DownloadEntity> entities = DaoManagerHelper.getManager().queryAll(url);
-            DownloadEntity downloadEntity = getEntity(i, entities);
+           // List<DownloadEntity> entities = DaoManagerHelper.getManager().queryAll(url);
+            DownloadEntity downloadEntity=null; //= getEntity(i, entities);
             if (downloadEntity == null) {
-                downloadEntity = new DownloadEntity(start, end, url, i, 0, mContentLength);
+                downloadEntity = new DownloadEntity(start, end, downloadItem.getUrl(), i, 0, mContentLength);
             }
-            Log.i(TAG, "init: 上次保存的进度progress=" + downloadEntity.getProgress());
-            DownloadRunnable downloadRunnable = new DownloadRunnable(name, url, mContentLength, i, start, end,
+           // Log.i(TAG, "init: 上次保存的进度progress=" + downloadEntity.getProgress());
+            DownloadRunnable downloadRunnable = new DownloadRunnable(downloadItem, mContentLength, i, start, end,
                     downloadEntity.getProgress(), downloadEntity, new DownloadCallback() {
                 @Override
                 public void onFailure(Exception e) {
@@ -122,6 +117,6 @@ public class DownloadTask {
     }
 
     public String getUrl() {
-        return url;
+        return downloadItem.getUrl();
     }
 }

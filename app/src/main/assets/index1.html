@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no">
+
+    <script type="text/javascript" src="/js/jquery-1.8.2.min.js"></script>
+    <title>首页</title>
+
+</head>
+
+<body>
+<div class="container pc-max-w-1380">
+    <div class="c-b-btn">
+        <div class="b-btn">
+            <a href="/system/filelist.html">
+                <span>usb</span> <i class="i-black"></i>
+            </a>
+        </div>
+        <div class="b-btn">
+            <a href="/system/publish.html">
+                <span>单体信发</span> <i class="i-black"></i>
+            </a>
+        </div>
+        <div class="b-btn wide-cms">
+            <a href="javascript:;">
+                <span>广域信发</span> <i class="i-black"></i>
+            </a>
+        </div>
+        <div class="b-btn">
+            <a href="/system/publish_history.html">
+                <span>发布历史</span> <i class="i-black"></i>
+            </a>
+        </div>
+        <div class="b-btn">
+            <a href="/system/shoppingcart.html">
+                <span>电子货架</span> <i class="i-black"></i>
+            </a>
+        </div>
+        <div class="b-btn">
+            <a href="/system/setting.html">
+                <span>设置</span> <i class="i-black"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+  $(function() {
+    //广域信发 发开dms
+	$('.wide-cms').on('click', function() {
+		$.ajax({
+			type : 'POST',
+			url : "/sys/dms",
+			data : {
+				"cmd" : "usb"
+			},
+			cache : false,
+			success : function(data) {
+				alert(data)
+			}
+		});
+	})
+ })
+</script>
+
+</body>
+</head>
+</html>

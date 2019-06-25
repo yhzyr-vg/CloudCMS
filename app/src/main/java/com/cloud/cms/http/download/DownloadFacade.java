@@ -1,8 +1,8 @@
-package com.steven.download.download;
+package com.cloud.cms.http.download;
 
 import android.content.Context;
 
-import com.steven.download.utils.FileManager;
+import com.cloud.cms.manager.FileManager;
 
 
 public class DownloadFacade {
@@ -17,11 +17,11 @@ public class DownloadFacade {
 
     public void init(Context context) {
         FileManager.getInstance().init(context);
-        DaoManagerHelper.getManager().init(context);
+        //DaoManagerHelper.getManager().init(context);
     }
 
-    public void startDownload(String url, String name, DownloadCallback callback) {
-        DownloadDispatcher.getInstance().startDownload(url, name, callback);
+    public void startDownload(DownloadItem downloadItem, DownloadCallback callback) {
+        DownloadDispatcher.getInstance().startDownload(downloadItem, callback);
     }
 
     public void startDownload(String url) {

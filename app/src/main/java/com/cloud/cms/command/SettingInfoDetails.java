@@ -1,4 +1,4 @@
-package landytest3;
+package com.cloud.cms.command;
 
 import java.io.Serializable;
 

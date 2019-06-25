@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
 
 /**
@@ -19,6 +20,7 @@ public class OkHttpManage {
     private Handler mHnadler;
     private Gson mGson;
 
+    private static OkHttpClient okHttpClient;
     /**
      * 单例
      *
@@ -28,9 +30,28 @@ public class OkHttpManage {
         if (mInstance == null) {
             mInstance = new OkHttpManage();
         }
+        if(okHttpClient==null){
+            okHttpClient = new OkHttpClient();
+        }
         return mInstance;
     }
 
+    public Call asyncCall(String url) {
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        return okHttpClient.newCall(request);
+    }
+
+    public Response syncResponse(String url, long start, long end) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                //Range 请求头格式Range: bytes=start-end
+                .addHeader("Range", "bytes=" + start + "-" + end)
+                .build();
+        return okHttpClient.newCall(request).execute();
+    }
     /**
      * 构造函数
      */

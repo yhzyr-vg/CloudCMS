@@ -17,6 +17,15 @@ public class LoginCommand {
     private String topicName;
     private Integer version;
     private List <Device> rows;
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getApkurl() {
         return apkurl;

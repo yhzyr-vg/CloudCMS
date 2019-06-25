@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.cloud.cms.R;
 import com.cloud.cms.config.Config;
+import com.cloud.cms.constants.URLConstants;
 import com.cloud.cms.http.intercept.ProgressListener;
 import com.cloud.cms.http.intercept.ProgressResponsBody;
 import com.cloud.cms.util.FileUtil;
@@ -55,17 +56,22 @@ public class InstallAPKActivity extends BaseActivity {
     //安装类型
     private int type;
 
-    @BindView(R.id.txt_message)
+//    @BindView(R.id.txt_message)
+//    TextView txt_message;
+//    @BindView(R.id.txt_percent)
+//    TextView txt_percent;
+//    @BindView(R.id.progressBar)
+//    ProgressBar progressBar;
+
     private TextView txt_message;
-    @BindView(R.id.txt_percent)
     private TextView txt_percent;
-    @BindView(R.id.progressBar)
     private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_install_apk);
+        init();
         context = this;
         if(!NetworkUtil.isNetworkAvailable(context)){
             showToast(context,"网络未连接");
@@ -81,9 +87,20 @@ public class InstallAPKActivity extends BaseActivity {
             showToast(context,"找不到安装文件");
             finish();
         }
+
+        if(!apkurl.contains("http")){
+            apkurl=URLConstants.BASE_URL+apkurl;
+        }
         String fileName=FileUtil.getFileNameByUrl(apkurl);
         //下载apk
         downLoadFile(apkurl,Config.INSTALL_APK_PATH,fileName);
+    }
+
+    private void init(){
+        txt_message = (TextView) findViewById(R.id.txt_message);
+        txt_message.setText(getResources().getString(R.string.download_start) + description);
+        txt_percent = (TextView) findViewById(R.id.txt_percent);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
     }
 
     /**
@@ -127,7 +144,7 @@ public class InstallAPKActivity extends BaseActivity {
 
         @Override
         public void onProgress(final int mProgress, final long contentSize) {
-            Log.i("**************下载进度：", String.valueOf(mProgress));
+           // Log.i("**************下载进度：", String.valueOf(mProgress));
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -167,7 +184,9 @@ public class InstallAPKActivity extends BaseActivity {
                     Log.e(TAG,e.toString());
                 }
                 if(type==TYPE_UPGRADE){
-                    autoUpgrade(path);
+                    //autoUpgrade(path);
+                    //PackageUtils.install(context,path);
+                    showToast(context,"下载完毕");
                 }else{
                     PackageUtils.install(context,path);
                 }

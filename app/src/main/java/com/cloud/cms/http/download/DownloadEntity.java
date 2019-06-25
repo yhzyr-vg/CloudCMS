@@ -1,4 +1,4 @@
-package com.steven.download.download.db;
+package com.cloud.cms.http.download;
 
 
 public class DownloadEntity {
@@ -15,6 +15,9 @@ public class DownloadEntity {
 
     private long contentLength;
 
+    private String path;
+    private String name;
+
     public DownloadEntity(long mStart, long mEnd,String url,
             int threadId, long progress, long contentLength) {
         this.mStart = mStart;
@@ -23,6 +26,18 @@ public class DownloadEntity {
         this.threadId = threadId;
         this.progress = progress;
         this.contentLength = contentLength;
+    }
+
+    public DownloadEntity(long mStart, long mEnd,String url,
+                          int threadId, long progress, long contentLength,String path,String name) {
+        this.mStart = mStart;
+        this.mEnd = mEnd;
+        this.url = url;
+        this.threadId = threadId;
+        this.progress = progress;
+        this.contentLength = contentLength;
+        this.path=path;
+        this.name=name;
     }
 
     public DownloadEntity(){}
@@ -89,6 +104,22 @@ public class DownloadEntity {
 
     public void setContentLength(long contentLength) {
         this.contentLength = contentLength;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

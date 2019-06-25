@@ -1,0 +1,88 @@
+		*{
+			font-size:18px;font-weight:400;
+		}
+		html,body{width:100%;height:100%;margin: 0px 0px;text-align:center;overflow:hidden}
+		input[type=button]{
+			outline:none;
+			width:50%;
+		}
+		.model{
+			border:3px solid;
+			height:90%;
+			width:98%;
+		}
+		.modelparent{
+			width:100%;
+			height:75%;
+			clear:both;
+		}
+		.cms_content{
+			height:100%;
+			margin:25px 5px 5px 5px;
+
+		}
+		.orientation1 .leftmodel{
+			float:left;
+			height:100%;
+			width:100%;
+			border-right:3px solid;
+		}
+		.orientation1 .rightmodel{
+			float:right;
+			height:100%;
+		}
+		.orientation2 .leftmodel{
+			height:100%;
+			width:100%;
+			display: block;
+			border-bottom: 3px solid;
+		}
+		.orientation2 .rightmodel{
+			width:100%;
+		}
+        .orientation1 .size30{
+		  width:29%;
+		}
+		.orientation1 .size50{
+		  width:49%;
+		}
+		.orientation1 .size70{
+		  width:70%;
+		}
+		 .orientation2 .size30{
+		   height: 29%;
+		}
+		.orientation2 .size50{
+		   height: 49%;
+		}
+		.orientation2 .size70{
+		  height:70%;
+		}
+		.cms_upload{
+		  height:50%;
+		  font-size:25px;font-weight:600;
+		}
+
+		.cms_publish{
+		  height:50%;
+		}
+
+		.cms_imglist{
+		  text-align:left;
+		  font-size:12px;
+		  font-weight:100;
+		}
+		.clear_both{
+		  clear:both;
+		}
+
+		.line{
+		   margin:30px 5px 5px 5px;
+		}
+		input[type=radio]{
+			width:25px;
+			height:25px;
+		}
+		.none{
+		  display:none;
+		}

@@ -1,11 +1,12 @@
-package com.steven.download.download;
+package com.cloud.cms.http.download;
 
 import android.os.Environment;
 import android.util.Log;
 
-import com.steven.download.download.db.DownloadEntity;
-import com.steven.download.okhttp.OkHttpManager;
-import com.steven.download.utils.Utils;
+import com.cloud.cms.config.Config;
+import com.cloud.cms.http.OkHttpManage;
+import com.cloud.cms.util.FileUtil;
+import com.cloud.cms.util.NetworkUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,6 @@ import okhttp3.Response;
  * Description:
  * Data：4/19/2018-1:45 PM
  *
- * @author: yanzhiwen
  */
 public class DownloadRunnable implements Runnable {
     private static final String TAG = "DownloadRunnable";
@@ -27,9 +27,7 @@ public class DownloadRunnable implements Runnable {
     //线程的状态
     private int mStatus = STATUS_DOWNLOADING;
     //文件下载的url
-    private String url;
-    //文件的名称
-    private String name;
+    private DownloadItem downloadItem;
     //线程id
     private int threadId;
     //每个线程下载开始的位置
@@ -44,10 +42,9 @@ public class DownloadRunnable implements Runnable {
     private DownloadEntity mDownloadEntity;
 
 
-    public DownloadRunnable(String name, String url, long currentLength, int threadId, long start, long end,
+    public DownloadRunnable(DownloadItem downloadItem, long currentLength, int threadId, long start, long end,
                             long progress, DownloadEntity downloadEntity, DownloadCallback downloadCallback) {
-        this.name = name;
-        this.url = url;
+        this.downloadItem=downloadItem;
         this.mCurrentLength = currentLength;
         this.threadId = threadId;
         this.start = start;
@@ -62,12 +59,28 @@ public class DownloadRunnable implements Runnable {
         InputStream inputStream = null;
         RandomAccessFile randomAccessFile = null;
         try {
-            Response response = OkHttpManager.getInstance().syncResponse(url, start, end);
+            String name=downloadItem.getName();
+            if(name==null){
+                name=FileUtil.getFileNameByUrl(downloadItem.getUrl());
+            }
+            String path=downloadItem.getPath();
+            if(path==null){
+                path= Config.RESOURCE_INFO;
+            }
+            path= path+name;
+            String[] command = {"chmod", "777", path};
+            ProcessBuilder builder = new ProcessBuilder(command);
+            try {
+                builder.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Response response = OkHttpManage.getInstance().syncResponse(downloadItem.getUrl(), start, end);
             Log.i(TAG, "fileName=" + name + " 每个线程负责下载文件大小contentLength=" + response.body().contentLength()
-                    + " 开始位置start=" + start + "结束位置end=" + end + " threadId=" + threadId);
+                    + " 开始位置start=" + start + "结束位置end=" + end + " threadId=" + threadId+"  path:"+path);
             inputStream = response.body().byteStream();
             //保存文件的路径
-            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), name);
+            File file = new File(Config.RESOURCE_INFO, name);
             randomAccessFile = new RandomAccessFile(file, "rwd");
             //seek从哪里开始
             randomAccessFile.seek(start);
@@ -89,12 +102,12 @@ public class DownloadRunnable implements Runnable {
             e.printStackTrace();
             downloadCallback.onFailure(e);
         } finally {
-            Utils.close(inputStream);
-            Utils.close(randomAccessFile);
-            Log.i(TAG, "**************保存到数据库*******************");
+            NetworkUtil.close(inputStream);
+            NetworkUtil.close(randomAccessFile);
+           // Log.i(TAG, "**************保存到数据库*******************");
             //保存到数据库
             mDownloadEntity.setProgress(mProgress);
-            DaoManagerHelper.getManager().addEntity(mDownloadEntity);
+            //DaoManagerHelper.getManager().addEntity(mDownloadEntity);
 
         }
     }

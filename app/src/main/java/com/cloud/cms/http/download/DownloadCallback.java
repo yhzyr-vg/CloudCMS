@@ -1,4 +1,4 @@
-package com.steven.download.download;
+package com.cloud.cms.http.download;
 
 import java.io.File;
 
@@ -6,7 +6,6 @@ import java.io.File;
  * Description:
  * Data：4/19/2018-1:46 PM
  *
- * @author: yanzhiwen
  */
 public interface DownloadCallback {
     /**

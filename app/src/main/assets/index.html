@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html>
+	<meta charset="utf-8">
+	<meta name="viewport"  content="width=device-width,height=device-height,initial-scale=1.0,mininum-scale=1.0,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="format-detection" content="telephone=no,email=no">
+	<meta http-equiv="Cahe-Control" content="no-siteapp"/>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+ <head>
+    <title>界面1</title>
+    <meta charset="utf-8">
+	
+	<style type="text/css">
+		*{
+			font-size:25px;font-weight:600;
+		}
+		html,body{width:100%;height:100%;margin: 0px 0px;text-align:center;overflow:hidden}
+		input[type=button]{
+			width:45%;
+			height:30%;
+			margin:2% 0%;
+			font-size:20px;
+			outline:none;
+			border:none;
+		}
+		
+
+	</style>
+</head>
+<body style="background-image:url('images/index_bg.png');background-size:100% 100%;">
+	<div style="height:85%;margin:15% 0% 0% 0%;">
+		<input type="button" onclick="redirectto(1)" class="usb_btn"  style="background-image:url('images/usb.png');background-size:100% 100%;"/>
+		<input type="button" onclick="redirectto(2)" style="background-image:url('images/dtxf.png');background-size:100% 100%;"/>
+		<input type="button"  class="dms_btn" style="background-image:url('images/gyxf.png');background-size:100% 100%;"/>
+		<input type="button" onclick="redirectto(4)" class="history_btn"  style="background-image:url('images/lsfb.png');background-size:100% 100%;"/>
+		<input type="button"  class="usb_btn" style="background-image:url('images/dzhj.png');background-size:100% 100%;"/>
+		<input type="button"   class="setting_btn" style="background-image:url('images/sz.png');background-size:100% 100%;"/>
+	</div>
+
+   
+	<script>
+$(function(){
+$('.usb_btn').on('click',function(){
+$.ajax({
+  type:'POST',
+   url:'/sys/usb',
+   data:{
+   "cmd":"usb"
+   },
+cache:false,
+success:function(data){
+  window.location.href="/system/filelist.html";
+}
+});
+})
+
+$('.dms_btn').on('click',function(){
+$.ajax({
+  type:'POST',
+   url:'/sys/dms',
+   data:{
+   "cmd":"dms"
+   },
+cache:false,
+success:function(data){
+alert(data)
+}
+});
+})
+
+})
+	
+	
+	
+		function redirectto(num){
+		     switch(num){
+			 case 1:
+			 location.href="system/filelist.html";
+			 break;
+			 case 2:
+			 location.href="system/publish.html";
+			 break;
+			 case 4:
+			 location.href="system/publish_history.html";
+			 break;
+			 case 5:
+			
+			 break;
+			 }
+			
+		}
+		
+		
+	</script>
+</body>
+</html>

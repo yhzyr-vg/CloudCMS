@@ -1,10 +1,9 @@
-package com.steven.download.download;
+package com.cloud.cms.http.download;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.steven.download.okhttp.OkHttpManager;
-
+import com.cloud.cms.http.OkHttpManage;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -22,7 +21,6 @@ import okhttp3.Response;
  * Description:
  * Data：4/19/2018-1:45 PM
  *
- * @author: yanzhiwen
  */
 public class DownloadDispatcher {
     private static final String TAG = "DownloadDispatcher";
@@ -74,12 +72,10 @@ public class DownloadDispatcher {
 
 
     /**
-     * @param name     文件名
-     * @param url      下载的地址
      * @param callBack 回调接口
      */
-    public void startDownload(final String name, final String url, final DownloadCallback callBack) {
-        Call call = OkHttpManager.getInstance().asyncCall(url);
+    public void startDownload(final DownloadItem downloadItem, final DownloadCallback callBack) {
+        Call call = OkHttpManage.getInstance().asyncCall(downloadItem.getUrl());
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -94,7 +90,7 @@ public class DownloadDispatcher {
                 if (contentLength <= -1) {
                     return;
                 }
-                DownloadTask downloadTask = new DownloadTask(name, url, THREAD_SIZE, contentLength, callBack);
+                DownloadTask downloadTask = new DownloadTask(downloadItem, THREAD_SIZE, contentLength, callBack);
                 downloadTask.init();
                 runningTasks.add(downloadTask);
             }

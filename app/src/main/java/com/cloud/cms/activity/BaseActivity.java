@@ -1,5 +1,6 @@
 package com.cloud.cms.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,15 +9,20 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.cloud.cms.manager.PreferenceManager;
+
 import butterknife.ButterKnife;
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends Activity {
+
+    public PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //黄油刀 view 注解框架
         ButterKnife.bind(this);
+        preferenceManager=PreferenceManager.getInstance();
     }
 
     /**
