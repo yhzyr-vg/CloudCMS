@@ -89,8 +89,13 @@
 			     url : "/sys/publish",//处理参数
 			     data : jsonData,
 			     cache : false,
-			     success : function(data) {
-				   alert(data)
+			     success : function(dataStr) {
+			     var data=$.parseJSON(dataStr);
+			     if(data.result){
+			     showMessage("发布成功！")
+			     }else{
+			     showMessage("发布失败！")
+			     }
 			    }
 		      });
 	    	});

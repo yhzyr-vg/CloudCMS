@@ -37,5 +37,7 @@ public class TemplateConstants {
      */
     public static Integer TEMPLATE_SCREEN_ORIENTATION_PORTRAIT=2;
 
+    public static Integer TEMPLATE_FULL_SCREEN=1; //全屏
+
 
 }

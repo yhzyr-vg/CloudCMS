@@ -1,20 +1,12 @@
 package com.cloud.cms.manager.template;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.VideoView;
 
 import com.alibaba.fastjson.JSON;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.cloud.cms.command.ResourceCommand;
 import com.cloud.cms.command.TemplateCommand;
 import com.cloud.cms.command.WidgetCommand;
@@ -25,7 +17,6 @@ import com.cloud.cms.util.FullScreenVideoView;
 import com.cloud.cms.util.Validator;
 import com.youth.banner.Banner;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,13 +36,13 @@ public class TemplateManager {
     private List<String> mVideoList = new ArrayList<String>();
     /**
      * 保存模板
-     * @param templateCommand
+     * @param templateCommand 模板
      */
     public void saveTemplate(TemplateCommand templateCommand){
         String templateCommandStr=PreferenceManager.getInstance().getTemplate();
         List<TemplateCommand> templateCommandList=null;
         if(Validator.isNotNullOrEmpty(templateCommandStr)){
-            Log.i(tag,"=======Template history: "+templateCommandStr);
+            // Log.i(tag,"=======Template history: "+templateCommandStr);
             templateCommandList= JSON.parseArray(templateCommandStr,TemplateCommand.class);
         }
         if(Validator.isNullOrEmpty(templateCommandList)){
@@ -62,15 +53,39 @@ public class TemplateManager {
     }
 
     /**
+     * 根据文件路径构建模板
+     * @param path 文件路径
+     * @return TemplateCommand
+     */
+    public TemplateCommand getTemplateByPath(String path){
+        ResourceCommand resourceCommand=new ResourceCommand();
+        resourceCommand.setUrl(path);
+        resourceCommand.setType(path.substring(path.lastIndexOf(".") + 1).toLowerCase());
+        List<ResourceCommand> resourceList=new ArrayList<ResourceCommand>();
+        resourceList.add(resourceCommand);
+        //构建widget
+        WidgetCommand widgetCommand=new WidgetCommand();
+        widgetCommand.setType(getResourceType(resourceCommand.getType()));//设置view 的类型 ，图片或者视频
+        widgetCommand.setResourceCommandList(resourceList);
+        List<WidgetCommand> widgetCommandList =new ArrayList<WidgetCommand>();
+        widgetCommandList.add(widgetCommand);
+        //开始构建模板
+        TemplateCommand templateCommand=new TemplateCommand();
+        templateCommand.setScreenType(TemplateConstants.TEMPLATE_FULL_SCREEN);//全屏显示
+        templateCommand.setWidgetCommandList(widgetCommandList);
+        return templateCommand;
+    }
+
+    /**
      * 根据id 获取模板
-     * @param id
-     * @return
+     * @param id 模板id
+     * @return TemplateCommand
      */
     public TemplateCommand getTemplateById(Long id){
         try{
             TemplateCommand templateCommand=null;
             String templateCommandStr=PreferenceManager.getInstance().getTemplate();
-            List<TemplateCommand> templateCommandList=null;
+            List<TemplateCommand> templateCommandList;
             if(Validator.isNotNullOrEmpty(templateCommandStr)){
                 templateCommandList= JSON.parseArray(templateCommandStr,TemplateCommand.class);
             }else{
@@ -89,8 +104,8 @@ public class TemplateManager {
 
     /**
      * 前端传入的数据转化为模板
-     * @param paramstr
-     * @return
+     * @param paramstr 模板数据
+     * @return TemplateCommand
      */
     public TemplateCommand getTemplate(String paramstr){
         TemplateCommand templateCommand= JSON.parseObject(paramstr,TemplateCommand.class); //解析json
@@ -110,7 +125,7 @@ public class TemplateManager {
                     }
                 }
 
-                Log.i(tag, "resourceCommandList:"+JSON.toJSONString(resourceCommandList));
+                //Log.i(tag, "resourceCommandList:"+JSON.toJSONString(resourceCommandList));
                 if(Validator.isNotNullOrEmpty(resourceCommandList)){
                     List<WidgetCommand> widgetCommandList=new ArrayList<WidgetCommand>();
                     //对资源按位置分类,前端输入的数据必须限定 一个widget 里只能输入一种类型的资源，要不就是图片，要不就是视频,也就是一个位置只允许输入一种类型的资源
@@ -119,17 +134,9 @@ public class TemplateManager {
                         List<ResourceCommand> resourceList=getResourceByPosition(position,resourceCommandList);
                         if(Validator.isNotNullOrEmpty(resourceList)){
                             WidgetCommand widgetCommand=new WidgetCommand();
-                            String type=null;
-                            if(isImage(resourceList.get(0).getType())){//图片
-                                type=TemplateConstants.WIDGET_TYPE_IMAGE;
-                            }else if(isVideo(resourceList.get(0).getType())){
-                                type=TemplateConstants.WIDGET_TYPE_VIDEO;
-                            }
-                            widgetCommand.setType(type);
+                            widgetCommand.setType(getResourceType(resourceList.get(0).getType()));//设置view 的类型 ，图片或者视频
                             widgetCommand.setResourceCommandList(resourceList);
                             widgetCommand.setPosition(position);
-                            //计算widget的宽高 位置
-                            widgetCommand=getWidgetHeight(widgetCommand,templateCommand);
                             widgetCommandList.add(widgetCommand);
                         }
                     }
@@ -142,9 +149,9 @@ public class TemplateManager {
 
     /**
      * 计算宽高
-     * @param widgetCommand
-     * @param templateCommand
-     * @return
+     * @param widgetCommand widgetCommand
+     * @param templateCommand templateCommand
+     * @return WidgetCommand
      */
     private WidgetCommand getWidgetHeight(WidgetCommand widgetCommand,TemplateCommand templateCommand){ //目前模板分 1.全屏，2:50%，3:30% ,再根据横竖屏划分
         if(templateCommand.getScreenType().intValue()==1){//全屏
@@ -179,7 +186,7 @@ public class TemplateManager {
             }
             width=Config.SCREEN_WIDTH;
         }
-        Log.i(tag,Config.SCREEN_WIDTH+" widget width:"+width+"  height:"+height+"  left:"+left+"  top:"+top);
+        // Log.i(tag,Config.SCREEN_WIDTH+" widget width:"+width+"  height:"+height+"  left:"+left+"  top:"+top);
         widgetCommand.setWidth(width);
         widgetCommand.setHeight(height);
         widgetCommand.setLeft(left);
@@ -222,7 +229,7 @@ public class TemplateManager {
         //定为widget，设置width,height,left,top
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(widgetCommand.getWidth(), widgetCommand.getHeight());
         params.setMargins(widgetCommand.getLeft(), widgetCommand.getTop(), 0, 0);
-
+        //Log.i(tag,"show widget:"+ JSON.toJSONString(widgetCommand));
         switch (widgetCommand.getType()){//类型： 目前只有图片和视频
             case TemplateConstants.WIDGET_TYPE_IMAGE://处理图片
                 if(widgetCommand.getResourceCommandList().size()==1){//只有一张图片，就创建一个imageView
@@ -231,7 +238,7 @@ public class TemplateManager {
                     main_layout.addView(imageView);//imageview  加载到layout上
                     //显示图片
                     ResourceCommand resourceCommand=widgetCommand.getResourceCommandList().get(0);
-                    imageViewManager.showImage(resourceCommand.getUrl(),context,imageView);
+                    imageViewManager.showImage(resourceCommand.getUrl(),context,imageView,widgetCommand.getWidth());
                 }else  if(widgetCommand.getResourceCommandList().size() > 1){//多张图片，以轮播的方式展示图片，轮播动画有多重，淡入淡出，左右滑动轮播等
                     //这里使用一个第三方的轮播框架 Banner
                     Banner banner=new Banner(context);
@@ -246,26 +253,10 @@ public class TemplateManager {
                 }
                 break;
             case TemplateConstants.WIDGET_TYPE_VIDEO://处理视频，视频只有一个
-                if(widgetCommand.getResourceCommandList().size()==1){
-                    FullScreenVideoView videoView=new FullScreenVideoView(context);
-                    videoView.setLayoutParams(params);
-                    main_layout.addView(videoView);
-                    ResourceCommand resourceCommand=widgetCommand.getResourceCommandList().get(0);
-                    videoView.setVideoPath(resourceCommand.getUrl());
-                    videoView.start();
-                    videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            mp.start();
-                            mp.setLooping(true);
-                        }
-                    });
-                }else if(widgetCommand.getResourceCommandList().size()>1) {
-                    final FullScreenVideoView videoView = new FullScreenVideoView(context);
-                    videoView.setLayoutParams(params);
-                    main_layout.addView(videoView);
-                    ResourceCommand resourceCommand = widgetCommand.getResourceCommandList().get(curIndex);
-                }
+                FullScreenVideoView videoView=new FullScreenVideoView(context);
+                videoView.setLayoutParams(params);
+                main_layout.addView(videoView);
+                showVideo(widgetCommand,context,videoView);
                 break;
 
             default:break;
@@ -274,13 +265,26 @@ public class TemplateManager {
 
     /**
      * 加载视频
-     * @param filePath
+     * @param widgetCommand
      * @param context
      * @param videoView
      */
-    private void showVideo(String filePath, Context context, VideoView videoView){
+    private void showVideo(WidgetCommand widgetCommand, Context context, FullScreenVideoView videoView){
         //播放视频的代码
-
+        if(widgetCommand.getResourceCommandList().size()==1){
+            ResourceCommand resourceCommand=widgetCommand.getResourceCommandList().get(0);
+            videoView.setVideoPath(resourceCommand.getUrl());
+            videoView.start();
+            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.start();
+                    mp.setLooping(true);
+                }
+            });
+        }else if(widgetCommand.getResourceCommandList().size()>1) {
+            ResourceCommand resourceCommand = widgetCommand.getResourceCommandList().get(curIndex);
+        }
     }
 
 
@@ -296,6 +300,16 @@ public class TemplateManager {
             }
         }
         return resourceCommandList;
+    }
+
+    public String getResourceType(String resourceType){
+        String type=null;
+        if(isImage(resourceType)){//图片
+            type=TemplateConstants.WIDGET_TYPE_IMAGE;
+        }else if(isVideo(resourceType)){
+            type=TemplateConstants.WIDGET_TYPE_VIDEO;
+        }
+        return type;
     }
 
     /**

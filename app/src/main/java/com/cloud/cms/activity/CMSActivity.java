@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import com.alibaba.fastjson.JSON;
 import com.cloud.cms.R;
 import com.cloud.cms.command.TemplateCommand;
+import com.cloud.cms.config.Config;
 import com.cloud.cms.constants.ActionConstants;
 import com.cloud.cms.http.WebService;
 import com.cloud.cms.manager.PreferenceManager;
@@ -29,11 +30,14 @@ public class CMSActivity extends BaseActivity {
     private RelativeLayout main_layout;
     private BroadcastReceiver tvBroadcastReceiver;
     private Context context;
+    TemplateManager templateManager;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         main_layout = new RelativeLayout(this);
         context=this;
+        templateManager=new TemplateManager();
+        Log.i(tag,"======ip:"+NetworkUtil.getIPAddress(context)+":"+Config.SERVER_PORT);
         setContentView(main_layout);
         Intent intent = new Intent(CMSActivity.this, WebService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -46,7 +50,6 @@ public class CMSActivity extends BaseActivity {
         String templateCommandStr=PreferenceManager.getInstance().getTemplate();
         List<TemplateCommand> templateCommandList=null;
         if(Validator.isNotNullOrEmpty(templateCommandStr)){
-            Log.i(tag,"=======Template history: "+templateCommandStr);
             templateCommandList= JSON.parseArray(templateCommandStr,TemplateCommand.class);
             if(Validator.isNotNullOrEmpty(templateCommandList)){
                 //取最新的模板
@@ -87,7 +90,6 @@ public class CMSActivity extends BaseActivity {
      * @param templateCommand
      */
     private void loadTemplate(TemplateCommand templateCommand){
-        TemplateManager templateManager=new TemplateManager();
         templateManager.createView(templateCommand,context,main_layout);
     }
     @Override

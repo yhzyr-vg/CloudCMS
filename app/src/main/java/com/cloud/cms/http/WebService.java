@@ -1,9 +1,11 @@
 package com.cloud.cms.http;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.util.Log;
@@ -15,11 +17,14 @@ import com.cloud.cms.command.TemplateCommand;
 import com.cloud.cms.config.Config;
 import com.cloud.cms.constants.ActionConstants;
 import com.cloud.cms.constants.FileConstants;
+import com.cloud.cms.constants.URLConstants;
 import com.cloud.cms.form.BaseForm;
 import com.cloud.cms.form.FileListForm;
 import com.cloud.cms.manager.PreferenceManager;
 import com.cloud.cms.manager.ServerHolderManager;
+import com.cloud.cms.manager.broadcast.USBBroadcastReceiver;
 import com.cloud.cms.manager.filelist.FileListManager;
+import com.cloud.cms.manager.filelist.FileManager;
 import com.cloud.cms.manager.template.PublishManager;
 import com.cloud.cms.manager.template.TemplateManager;
 import com.cloud.cms.util.NetworkUtil;
@@ -42,8 +47,8 @@ import java.util.List;
 
 public class WebService  extends Service {
     private static final String tag=WebService.class.getSimpleName();
-    private AsyncHttpServer server;
-    private AsyncServer mAsyncServer;
+    private AsyncHttpServer  server = new AsyncHttpServer();
+    private AsyncServer mAsyncServer= new AsyncServer();
     /**静态资源列表 assets 文件夹下的 css,js,html,images,usb 下的静态文件*/
     private String [] assetsResourceList;
     /**手机 TV 内存或者usb 中的文件*/
@@ -53,34 +58,45 @@ public class WebService  extends Service {
     private TemplateManager templateManager;
     private ServerHolderManager serverHolderManager;
     private PublishManager publishManager;
+    BroadcastReceiver tvBroadcastReceiver;
 
     public IBinder onBind(Intent arg0) { return null; }
     @Override
     public void onCreate() {
         super.onCreate();
         context=this;
-        Log.i(tag,"======ip:"+NetworkUtil.getIPAddress(context)+":"+Config.SERVER_PORT);
         init();
         initService();
+        initBrocastReceiver();
     }
 
     /**一些初始化*/
     private void init(){
-        server = new AsyncHttpServer();
-        mAsyncServer = new AsyncServer();
+        tvBroadcastReceiver=new USBBroadcastReceiver();
         fileListManager=new FileListManager();
         templateManager=new TemplateManager();
         serverHolderManager=new ServerHolderManager();
         publishManager=new PublishManager();
-        //FileConstants.DEFAULT_DIRECTORY =getDir("upload",Context.MODE_PRIVATE).getPath(); //这里重置默认的上传路径，上生产删掉
-        //FileConstants.DEFAULT_USB_PATH ="/data/user/0/com.cloud.cms"; //这里重置默认的U盘路径，上生产删掉
+//        FileConstants.DEFAULT_DIRECTORY =getDir("upload",Context.MODE_PRIVATE).getPath(); //这里重置默认的上传路径，上生产删掉
+//        FileConstants.DEFAULT_USB_PATH ="/data/user/0/com.cloud.cms"; //这里重置默认的U盘路径，上生产删掉
+//        testCopy();//测试复制，上生产删掉
         assetsResourceList=new String []{"/favicon.ico","/css/.*","/js/.*","/system/.*","/images/.*"};
         derectoryResourceList=new String []{FileConstants.DEFAULT_DIRECTORY,FileConstants.DEFAULT_USB_PATH};
     }
 
+    /**
+     * 测试复制，上生产删掉
+     */
+    private void testCopy(){
+        FileConstants.DEFAULT_USB_VIDEO_PATH=getDir("upload",Context.MODE_PRIVATE).getPath();//这里重置默认的usb 复制路径，上生产删掉
+        FileConstants.DEFAULT_TV_VIDEO_PATH=getDir("screenshot",Context.MODE_PRIVATE).getPath();
+        FileManager fileManager=new FileManager();
+        fileManager.copyDirectory(FileConstants.DEFAULT_USB_VIDEO_PATH,FileConstants.DEFAULT_TV_VIDEO_PATH);
+    }
+
     private  void initService(){
-//        Intent intent = new Intent(this, PowerService.class);
-//        startService(intent);
+        //Intent intent = new Intent(this, PowerService.class);
+        //startService(intent);
         server.get("/", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
@@ -109,7 +125,6 @@ public class WebService  extends Service {
             }
         });
     }
-
     /**
      *  返回静态资源文件
      */
@@ -146,40 +161,23 @@ public class WebService  extends Service {
 
     //处理 get post 请求
     private  void doRequest(AsyncHttpServerRequest request,AsyncHttpServerResponse response){
-        ResultCommand resultCommand=new ResultCommand();
         try{
             String uri=request.getPath();
             Log.d(tag,"onRequest"+uri);
-            Object params;
-            if (request.getMethod().equals("GET")){
-                params=request.getQuery();
-            }else if (request.getMethod().equals("POST")&&Validator.isNotNullOrEmpty(request.getBody())){
-                String contentType=request.getHeaders().get("Content-Type");
-                if ("application/json".equals(contentType)){
-                    params=((AsyncHttpRequestBody<JSONObject>)request.getBody()).get();
-                }else{
-                    params=((AsyncHttpRequestBody<Multimap>)request.getBody()).get();
-                }
-            }else {
-                Log.d(tag,"Unsupported Method");
-                resultCommand.setResult(false);
-                response.send(JSON.toJSONString(resultCommand));
-                return;
-            }
-            String paramstr="";
-            if (params!=null){
-                Log.d(tag,"params ="+params.toString());
-                paramstr=params.toString().replaceAll("=",":")
-                        .replaceAll("\\[","\"")
-                        .replaceAll("\\]","\"");
-            }
-            Log.i(tag,"======================"+paramstr);
-
-            TemplateCommand templateCommand;
-            switch (uri){
+           if(!URLConstants.POST_METHOD.equals(request.getMethod())&&!URLConstants.GET_METHOD.equals(request.getMethod())){
+               Log.d(tag,"Unsupported Method");
+               response.send(JSON.toJSONString(new ResultCommand()));
+               return;
+           }
+           ResultCommand resultCommand=new ResultCommand();
+           String paramstr=serverHolderManager.getRequestParms(request,response);
+           TemplateCommand templateCommand;
+           switch (uri){
                 case "/sys/filelist":   //u盘文件列表
                     fileListManager.handleFileListRequest(paramstr,response);
-                    Log.i(tag,"======================filelist "+paramstr);
+                    break;
+                case "/sys/showFile":   //电视机显示需要播放的文件
+                    showFile(paramstr,response);
                     break;
                 case "/sys/dms":  //广域发布
                     Log.i(tag,"======================DMS");
@@ -197,23 +195,10 @@ public class WebService  extends Service {
                     publishManager.publishTemplate(templateCommand,response);//发布
                     break;
                 case "/sys/publishTemplateById":     //根据模板id 发布
-                    if(Validator.isNotNullOrEmpty(paramstr)){
-                        BaseForm form= JSON.parseObject(paramstr,BaseForm.class);
-                        if(Validator.isNotNullOrEmpty(form)&&Validator.isNotNullOrEmpty(form.getId())){
-                            templateCommand=templateManager.getTemplateById(form.getId());//根据id 获取模板
-                            publishManager.publishTemplate(templateCommand,response);//发布
-                        }else{
-                            response.send(JSON.toJSONString(resultCommand));
-                        }
-                    }else{
-                        response.send(JSON.toJSONString(resultCommand));
-                    }
+                    publishTemplateById(paramstr,response);
                     break;
                 case "/sys/publishHistory":     //发布历史
                     publishManager.showPublishHistory(response);
-                    break;
-                case "/sys/openfile":     //usb文件读取播放
-
                     break;
             }
         }catch (Exception e ){
@@ -222,6 +207,41 @@ public class WebService  extends Service {
         }
     }
 
+    /**
+     * 根据模板id 发布
+     * @param params
+     * @param response
+     */
+    private void publishTemplateById(String params, AsyncHttpServerResponse response){
+        BaseForm form= JSON.parseObject(params,BaseForm.class);
+        if(Validator.isNotNullOrEmpty(form)&&Validator.isNotNullOrEmpty(form.getId())){
+            TemplateCommand templateCommand=templateManager.getTemplateById(form.getId());//根据id 获取模板
+            publishManager.publishTemplate(templateCommand,response);//发布
+        }else{
+            response.send(JSON.toJSONString(new ResultCommand()));
+        }
+    }
+
+    /**
+     * 发布文件，这里是传入文件的路径，然后再页面上显示文件
+     * @param params
+     * @param response
+     */
+    private void showFile(String params, AsyncHttpServerResponse response){
+        FileListForm fileListForm= JSON.parseObject(params,FileListForm.class);
+        if(Validator.isNotNullOrEmpty(fileListForm)&&Validator.isNotNullOrEmpty(fileListForm.getPath())){
+            TemplateCommand templateCommand=templateManager.getTemplateByPath(fileListForm.getPath());//根据Path构建模板
+            publishManager.publishTemplate(templateCommand,response);//发布
+        }else{
+            response.send(JSON.toJSONString(new ResultCommand()));
+        }
+    }
+
+    private void initBrocastReceiver(){
+        IntentFilter filter=new IntentFilter(ActionConstants.ACTION_MEDIA_MOUNTED);//u 盘插入
+        filter.addAction(ActionConstants.ACTION_MEDIA_REMOVED);
+        registerReceiver(tvBroadcastReceiver,filter);
+    }
 
 
     public void startapk(String pkg,String activity){
@@ -235,6 +255,10 @@ public class WebService  extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(tvBroadcastReceiver!=null){
+            unregisterReceiver(tvBroadcastReceiver);
+            tvBroadcastReceiver=null;
+        }
     }
 
     @Override

@@ -1,20 +1,20 @@
 package com.cloud.cms.manager.template;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.cloud.cms.CloudCMSApplication;
 import com.cloud.cms.command.ResourceCommand;
 import com.cloud.cms.command.WidgetCommand;
+import com.cloud.cms.config.Config;
 import com.cloud.cms.util.Validator;
 
 import java.io.File;
@@ -26,19 +26,29 @@ import java.util.List;
  * Author: Landy
  * Create: 2019/6/12 10:27
  */
-public class ImageViewManager  {
+public class ImageViewManager {
 
+    private static String tag="ImageViewManager";
     /**
-     * 用glide 加载图片
+     *用glide 加载图片
      * @param filePath
+     * @param context
+     * @param imageView
+     * @param width  view 的宽度
      */
-    public void showImage(String filePath,Context context,ImageView imageView){
-
-
-       // Log.i("@@@@@@@@","@@@@@@@@@"+height+"@@@@@@"+width);
+    public void showImage(String filePath,Context context,ImageView imageView,int width){
+        if(width==RelativeLayout.LayoutParams.MATCH_PARENT){//如果是全屏
+            width= Config.SCREEN_WIDTH;//设置为屏幕的宽度
+        }
+        float percent=0.5f; //缩放比例
+        width=(int)(width*percent);
+        int[] width_height=getImageWidthHeight(filePath);//图片的原始宽高
+        float ratio=(float) ((width_height[0]*1.0)/(width*1.0));  //等比例
+        int height=(int) (width_height[1]*1.0/ratio);    //等比缩放高度
+        Log.i(tag,"原始宽高："+width_height[0]+"  高："+width_height[1]+"  showImage:width:"+width+"  height:"+height+"  全屏宽："+Config.SCREEN_WIDTH+"  全屏高："+Config.SCREEN_HEIGHT);
         Glide.with(context)
                 .load(new File(filePath))
-                //.override(width, height) //设置宽高
+                .override(width, height) //设置宽高
                 .skipMemoryCache(true)//禁止缓存
                 .crossFade()           //跳过动画
                 .centerCrop()

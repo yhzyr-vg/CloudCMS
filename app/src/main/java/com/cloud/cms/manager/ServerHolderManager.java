@@ -12,16 +12,21 @@ import com.cloud.cms.command.FileUploadHolder;
 import com.cloud.cms.command.ResultCommand;
 import com.cloud.cms.constants.ActionConstants;
 import com.cloud.cms.constants.FileConstants;
+import com.cloud.cms.util.Validator;
 import com.koushikdutta.async.ByteBufferList;
 import com.koushikdutta.async.DataEmitter;
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.DataCallback;
+import com.koushikdutta.async.http.Multimap;
+import com.koushikdutta.async.http.body.AsyncHttpRequestBody;
 import com.koushikdutta.async.http.body.MultipartFormDataBody;
 import com.koushikdutta.async.http.body.Part;
 import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
 import com.koushikdutta.async.http.server.AsyncHttpServerRequestImpl;
 import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
 import com.koushikdutta.async.http.server.HttpServerRequestCallback;
+
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -44,6 +49,36 @@ import static com.cloud.cms.activity.DownloadResource.TAG;
 public class ServerHolderManager {
 
     private static String tag="ServerHolderManager";
+
+
+    /**
+     * 获取参数
+     * @param request
+     * @param response
+     * @return
+     */
+    public String getRequestParms(AsyncHttpServerRequest request,AsyncHttpServerResponse response){
+        Object params=null;
+        if (request.getMethod().equals("GET")){
+            params=request.getQuery();
+        }else if (request.getMethod().equals("POST")&&Validator.isNotNullOrEmpty(request.getBody())){
+            String contentType=request.getHeaders().get("Content-Type");
+            if ("application/json".equals(contentType)){
+                params=((AsyncHttpRequestBody<JSONObject>)request.getBody()).get();
+            }else{
+                params=((AsyncHttpRequestBody<Multimap>)request.getBody()).get();
+            }
+        }
+        String paramstr="";
+        if (params!=null){
+            Log.d(tag,"params ="+params.toString());
+            paramstr=params.toString().replaceAll("=",":")
+                    .replaceAll("\\[","\"")
+                    .replaceAll("\\]","\"");
+        }
+        Log.i(tag,"======================"+paramstr);
+        return paramstr;
+    }
 
     /**
      * 首页
@@ -162,14 +197,7 @@ public class ServerHolderManager {
     public void getStorageResource(AsyncHttpServerRequest request, AsyncHttpServerResponse response){
         Log.d(TAG, request.getPath());
         try{
-            String resourceName = request.getPath().replace("%20", " ");
-            if(resourceName.endsWith("?")) {
-                resourceName = resourceName.substring(0, resourceName.length() - 1);
-            }
-            Log.i(tag,"============resourceName:"+resourceName);
-            if(!TextUtils.isEmpty(getContentTypeByResourceName(resourceName))) {
-                response.setContentType(getContentTypeByResourceName(resourceName));
-            }
+            String resourceName=getResourcePath(request,response);
             File file = new File(resourceName);
             FileInputStream ex = new FileInputStream(file);
             response.sendStream(ex, ex.available());
@@ -186,23 +214,28 @@ public class ServerHolderManager {
      */
     public void getAssetsResources(AsyncHttpServerRequest request, AsyncHttpServerResponse response,Context context){
         try {
-            String resourceName = request.getPath().replace("%20", " ");
-            if (resourceName.startsWith("/")) {
-                resourceName = resourceName.substring(1);
-            }
-            if (resourceName.indexOf("?") > 0) {
-                resourceName = resourceName.substring(0, resourceName.indexOf("?"));
-            }
-            Log.i(tag,"============getResource:"+resourceName);
-            if(!TextUtils.isEmpty(getContentTypeByResourceName(resourceName))) {
-                response.setContentType(getContentTypeByResourceName(resourceName));
-            }
+            String resourceName=getResourcePath(request,response);
             BufferedInputStream bInputStream = new BufferedInputStream(context.getAssets().open(resourceName));
             response.sendStream(bInputStream, bInputStream.available());
         } catch (IOException e) {
             e.printStackTrace();
             response.code(404).end();
         }
+    }
+
+    private String getResourcePath(AsyncHttpServerRequest request, AsyncHttpServerResponse response){
+        String resourceName = request.getPath().replace("%20", " ");
+        if (resourceName.startsWith("/")) {
+            resourceName = resourceName.substring(1);
+        }
+        if (resourceName.indexOf("?") > 0) {
+            resourceName = resourceName.substring(0, resourceName.indexOf("?"));
+        }
+        Log.i(tag,"============getResource:"+resourceName);
+        if(!TextUtils.isEmpty(getContentTypeByResourceName(resourceName))) {
+            response.setContentType(getContentTypeByResourceName(resourceName));
+        }
+        return resourceName;
     }
 
     /**
@@ -212,7 +245,7 @@ public class ServerHolderManager {
      */
     private String getFileNameFromHttpByteBufferList(ByteBufferList bb) {
         String s = bb.readString();
-        Log.i(tag,"========getFileNameFromHttpByteBufferList:"+s);
+        // Log.i(tag,"========getFileNameFromHttpByteBufferList:"+s);
         return s;
     }
 

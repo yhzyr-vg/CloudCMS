@@ -12,6 +12,9 @@ import java.util.Properties;
  */
 public class URLConstants {
 
+    public static final String POST_METHOD="POST";
+    public static final String GET_METHOD="GET";
+
     /** api domain */
     public static final String BASE_URL ;
     /**登陆的url*/

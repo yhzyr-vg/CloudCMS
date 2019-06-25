@@ -32,4 +32,10 @@ public class FileConstants {
 
     /**默认的usb 路径*/
     public static String DEFAULT_USB_PATH = "/mnt/usb/sda1";
+
+    /**默认的 usb 复制文件 路径*/
+    public static String DEFAULT_USB_VIDEO_PATH = DEFAULT_USB_PATH+"/video";
+
+    /**默认的 tv 保存 文件路径*/
+    public static String DEFAULT_TV_VIDEO_PATH = DEFAULT_DIRECTORY+"/video";
 }
