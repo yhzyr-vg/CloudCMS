@@ -1,0 +1,248 @@
+<!DOCTYPE HTML>
+<html>
+	<meta charset="utf-8">
+	<meta name="viewport"  content="width=device-width,height=device-height,initial-scale=1.0,mininum-scale=1.0,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="format-detection" content="telephone=no,email=no">
+
+	<script type="text/javascript" src="https://res.michaelkors.cn/libs/jquery/jquery.js"></script>
+ <head>
+    <title>模板设置</title>
+    <meta charset="utf-8">
+		<style type="text/css">
+		*{
+			font-size:25px;font-weight:600;
+		}
+		html,body{width:100%;height:100%;margin: 0px 0px;text-align:center;}
+		input[type=button]{
+			outline:none;
+			width:50%;
+		}
+		.model{
+			border:1px solid;
+			height:90%;
+			width:98%;			
+		}
+		.modelparent{
+			width:100%;
+			height:80%;
+			clear:both;
+		}
+		.cms_content{
+			height:100%;
+			margin:25px 5px 5px 5px;
+			
+		}
+		.leftmodel{
+			float:left;
+			height:100%;
+			border-right:1px solid;
+		}
+		.rightmodel{
+			float:right;
+			height:100%;
+		}
+		
+		.none{
+		  display:none;
+		}
+		
+		.width100{
+		  width:100%;
+		}
+		
+		.width50{
+		  width:49%;
+		}
+		
+		.width30{
+		  width:29%;
+		}
+		
+		.width70{
+		  width:70%;
+		}
+		.cms_upload{
+		  height:300px;
+		  font-size:25px;font-weight:600;
+		}
+		
+		.cms_publish{
+		  height:300px;
+		  font-size:25px;font-weight:600;
+		}
+		
+		.cms_imglist{
+		  text-align:left;
+		  font-size:16px;
+		}
+		
+		.xiang{
+			height:25%;
+			display: -webkit-box;
+			-webkit-box-pack:center;
+			-webkit-box-align:center;
+			-webkit-box-orient: vertical;
+			text-align: center;
+		}
+		
+		.clear_both{		 
+		  clear:both;
+		}
+	</style>
+</head>
+<body>
+	<div class="cms_content">
+	   <div class="cms_upload">
+	    <div><span><input type="radio" name="screentype" checked="checked" value="1"/>全屏</span>
+		<span><input type="radio" name="screentype" value="2"/>半屏</span>
+		<span><input type="radio" name="screentype" value="3"/>30%</span>
+		</div>		
+		<div class="modelparent">			
+			<div class="model">
+				<label class="leftmodel"></label>
+				<label class="rightmodel"></label>
+			</div>
+		</div>	       							
+		<div style="color: blue;" id="progressdiv"> 上传 <progress id="percent" type="circle" value="" max="100" ></progress><span id="per" style="color: blue; margin-left: 5px">0</span>%</div>    
+		<input type="file" value="上传" onchange="uploadFile(event,this)" id="fileupload_l" style="display:none"/> 		
+	  </div>
+	  <div class="cms_imglist"></div>	
+	  <div class="cms_publish">
+	    <div style="margin:8% 0%;font-size:30px;">选择发布时间</div>
+		<div class="xiang">
+			<div class="width100">起始<input type="time" id="startTime" value="09:00" style="margin-left:5%;margin-bottom:4%;width:50%"/></div>
+			<div class="width100">截止<input type="time" id="endTime" value="17:00" style="margin-left:5%;width:50%"/></div>
+		</div>
+		<div class="xiang width100"><input type="radio"  value="1" name="screen_style" checked="checked">横屏 <input type="radio" name="screen_style"  value="2"/>竖屏</div>
+		<div class="width100"><input type="button" value="发布" class="btn_publish"/></div>	  
+	  </div>
+	
+	<script>
+		
+		var cur_model;
+		$(document).ready(function(){
+	 		$(".leftmodel").click(function(){
+			    cur_model=1;//左
+	    		$("#fileupload_l").click();
+	    	});
+	    	$(".rightmodel").click(function(){
+			   cur_model=2;//右
+	    		$("#fileupload_l").click();
+	    	});
+			
+			$(".rightmodel").hide();
+			$("#progressdiv").hide();
+			$(".leftmodel").addClass('width100');
+			
+			$("input[name=screentype]").on('click',function() {//切换屏幕
+				//alert($(this).val())
+				var value=$(this).val();
+				if(value==1){
+				  $(".rightmodel").hide();				
+			      $(".leftmodel").addClass('width100').removeClass('width50').removeClass('width30');
+				  $(".rightmodel").removeClass('width50').removeClass('width100').removeClass('width70');
+				}else if(value==2){				
+				  $(".rightmodel").show();
+			      $(".leftmodel").addClass('width50').removeClass('width100').removeClass('width30');
+				  $(".rightmodel").addClass('width50').removeClass('width100').removeClass('width70');
+				}else{
+				  $(".rightmodel").show();
+			      $(".leftmodel").addClass('width30').removeClass('width50').removeClass('width100');
+				  $(".rightmodel").addClass('width70').removeClass('width50').removeClass('width100');
+				}								
+			});
+			
+			$(".btn_publish").click(function(){//点击发布
+			    var screenType=$("input[name=screentype]").val();//选择的屏幕
+	    		var imglist=$('.cms_imglist').html();//图片列表				
+				var startTime=$("#startTime").val();//起始时间
+				var endTime=$("#endTime").val();//结束时间
+				var screenStyle=$("input[name=screen_style]").val();//横竖屏 1 横屏 2 竖屏
+				
+				var jsonData = {
+					'screenType' : screenType, //选择的屏幕
+					'imgList' : imgList,//图片列表	
+					'startTime' : startTime, //起始时间
+					'endTime' : endTime,//结束时间
+					'screenStyle' : screenStyle  //横竖屏 1 横屏 2 竖屏					
+				}
+				
+				$.ajax({
+			     type : 'POST',
+			     url : "/sys/yhtest",//这里处理你提交的参数 自己写
+			     data : jsonData,
+			     cache : false,
+			     success : function(data) {
+				   alert(data)
+			    }
+		      });								
+	    	});
+	    	
+		});
+     
+		function uploadFile(ev,jQueryObj) { 
+            //var fileObj = document.getElementById("fileupload_0").files[0]; // 获取文件对象
+            //var files = document.getElementById("fileupload_0").files;
+            var files=jQueryObj.files;
+            console.debug(jQueryObj);
+            var form = new FormData();
+    		$.each(files,function(i){
+    			form.append("file"+i,files[i]);
+    			console.debug(form);
+   		 	});
+			 $.ajax({
+                   url:'/uploadifyFile',
+						data : form,
+						type : "POST",
+						dataType : "json",
+						cache : false,//上传文件无需缓存
+						processData : false,//用于对data参数进行序列化处理 这里必须false
+						contentType : false, // 不要设置Content-Type请求头，因为文件数据是以 multipart/form-data 来编码
+						beforeSend : function() {
+
+						},
+						 xhr: function(){
+					        myXhr = $.ajaxSettings.xhr();
+					        if(myXhr.upload){
+					          myXhr.upload.addEventListener('progress',function(e) {
+					             $("#progressdiv").show();
+					            if (e.lengthComputable) {
+					              var percent = Math.floor(e.loaded/e.total*100);
+					              if(percent <= 100) {
+					                 $("#percent").val(percent);//图片上传进度
+        							 $("#per").html(percent);
+					              }
+					              if(percent >= 100) {
+					                $("#progressdiv").hide();
+					              }
+					            }
+					          }, false);
+					        }
+					        return myXhr;
+					    },
+						success : function(result) {
+							// alert(result.message+"  "+result.result)
+						     if(result!=null&&result.result){                                   
+									$(".cms_imglist").append(result.message+"_"+cur_model+";");	//格式是 图片路径_左右;   表明该图片是在屏幕左边还是右边显示,多张图片逗号区分								
+									//===========这里处理上传图片或视频的回调  比如显示等
+									var img='<img src="'+result.result+'" style="overflow:hidden;width:100%" />';
+									if(cur_model==1){//左
+									$(".leftmodel").html(img)
+									}else{//右
+									 $(".rightmodel").html(img)
+									}									
+						     }
+							
+						},
+						error : function() {
+							alert("选择文件失败");
+						}
+					});
+		}
+		
+	</script>
+
+</body>
+</html>
