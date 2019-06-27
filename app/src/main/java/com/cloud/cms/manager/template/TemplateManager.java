@@ -302,7 +302,7 @@ public class TemplateManager {
         return resourceCommandList;
     }
 
-    public String getResourceType(String resourceType){
+    public static String getResourceType(String resourceType){
         String type=null;
         if(isImage(resourceType)){//图片
             type=TemplateConstants.WIDGET_TYPE_IMAGE;
@@ -328,6 +328,10 @@ public class TemplateManager {
      */
     public static boolean isVideo(String type){
         return TYPE_VIDEO.contains(type.toLowerCase());
+    }
+
+    public static String getExp(String source) {
+        return source.substring(source.lastIndexOf(".") + 1).toLowerCase();
     }
 
 }

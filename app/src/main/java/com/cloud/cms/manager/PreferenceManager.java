@@ -89,7 +89,7 @@ public class PreferenceManager {
     }
 
     /**
-     * 节目内容
+     * 商品信息
      * @param programs
      */
     public void setPrograms(String programs) {
@@ -98,6 +98,18 @@ public class PreferenceManager {
 
     public String getPrograms() {
         return getString("programs");
+    }
+
+    /**
+     * 商品信息
+     * @param products
+     */
+    public void setProducts(String products) {
+        putString("products",products);
+    }
+
+    public String getProducts() {
+        return getString("products");
     }
 
     /**

@@ -1,0 +1,30 @@
+body {
+	background-image: url('/images/index_bg.png');
+}
+
+.menu {
+	margin: 16% 0% 0% 0%;
+	text-align: center;
+	overflow: hidden;
+}
+
+.list-row {
+	width: 49%;
+	display: inline-block;
+	zoom: 1;
+	vertical-align: top;
+	padding: 1% 0%;
+}
+
+.list-row img {
+	width: 95%;
+	height: auto;
+	margin-left: auto;
+	margin-right: auto;
+	opacity: 1;
+}
+@media screen and (min-width: 768px) {
+	.list-row {
+		width: 24%;
+	}
+}

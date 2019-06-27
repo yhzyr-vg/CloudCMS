@@ -1,0 +1,30 @@
+.list-row {
+	width: 49%;
+	display: inline-block;
+	zoom: 1;
+	vertical-align: top;
+}
+@media screen and (min-width: 768px){
+.list-row {
+	width: 24.5%;
+}
+}
+
+.list-row img {
+	width: 100%;
+	height: auto;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.product-name {
+	margin: 10px 0 11px;
+	height: 40px;
+}
+
+.product-name h2 {
+	font-size: 14px;
+	font-weight: 120;
+	line-height: 14px;
+	padding-top: 2px;
+}

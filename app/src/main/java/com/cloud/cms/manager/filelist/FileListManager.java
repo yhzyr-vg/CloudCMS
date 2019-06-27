@@ -50,11 +50,12 @@ public class FileListManager {
             }
         }
         File dirfile=new File(dir);
-        Log.i(tag,dir+ "     file  list"+JSON.toJSONString(dirfile.list()));
+       // Log.i(tag,dir+ "     file  list"+JSON.toJSONString(dirfile.list()));
         String[] fileNames = dirfile.list();
         List<ProgramFilesCommand> programFilesCommandList=new ArrayList<ProgramFilesCommand>();
         if (fileNames != null&&fileNames.length>0) {
             for (String fileName : fileNames) {
+              //  Log.i(tag,dir+ "     ======fileName:"+fileName);
                 File file = new File(dir, fileName);
                 if(file.exists()){
                     ProgramFilesCommand programFilesCommand=new ProgramFilesCommand();

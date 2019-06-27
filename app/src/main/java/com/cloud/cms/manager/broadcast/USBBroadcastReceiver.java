@@ -29,8 +29,7 @@ public class USBBroadcastReceiver extends BroadcastReceiver {
             }
             if (ActionConstants.ACTION_MEDIA_MOUNTED.equals(action)) {//U盘插入  执行拷贝
                 Log.e(TAG, "插入 u 盘 onReceive: --------usb路径-------"+ path);
-
-                fileManager.copyDirectory(FileConstants.DEFAULT_USB_VIDEO_PATH,FileConstants.DEFAULT_TV_VIDEO_PATH);
+                fileManager.copyDirectory(FileConstants.DEFAULT_USB_PRODUCT_PATH,FileConstants.DEFAULT_TV_PRODUCT_PATH);
             }
         }
 

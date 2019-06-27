@@ -125,7 +125,7 @@ public class ServerHolderManager {
             public void onPart(final Part part) {
                 if (part.isFile()){
                     String fileName=getNewFileName(part.getFilename());
-                    Log.i(tag,"======newFileName:"+fileName+"  part.isFile():"+part.isFile());
+                    //Log.i(tag,"======newFileName:"+fileName+"  part.isFile():"+part.isFile());
                     if (TextUtils.isEmpty(fileUploadHolder.getFileName()) && !TextUtils.isEmpty(fileName)) {
                         generateReceivedFileAndFileStream(fileUploadHolder, fileName,storagePath);
                     }
@@ -231,7 +231,7 @@ public class ServerHolderManager {
         if (resourceName.indexOf("?") > 0) {
             resourceName = resourceName.substring(0, resourceName.indexOf("?"));
         }
-        Log.i(tag,"============getResource:"+resourceName);
+       // Log.i(tag,"============getResource:"+resourceName);
         if(!TextUtils.isEmpty(getContentTypeByResourceName(resourceName))) {
             response.setContentType(getContentTypeByResourceName(resourceName));
         }
@@ -255,7 +255,7 @@ public class ServerHolderManager {
      * @return
      */
     public   String getNewFileName(String fileName){
-        Log.i(tag,"=======getNewFileName fileName"+fileName);
+       // Log.i(tag,"=======getNewFileName fileName"+fileName);
         String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
         String	newFileName =fileExt+df.format(new Date()) + "." + fileExt;

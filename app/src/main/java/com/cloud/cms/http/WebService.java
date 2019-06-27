@@ -25,6 +25,7 @@ import com.cloud.cms.manager.ServerHolderManager;
 import com.cloud.cms.manager.broadcast.USBBroadcastReceiver;
 import com.cloud.cms.manager.filelist.FileListManager;
 import com.cloud.cms.manager.filelist.FileManager;
+import com.cloud.cms.manager.product.ProductManager;
 import com.cloud.cms.manager.template.PublishManager;
 import com.cloud.cms.manager.template.TemplateManager;
 import com.cloud.cms.util.NetworkUtil;
@@ -59,6 +60,7 @@ public class WebService  extends Service {
     private ServerHolderManager serverHolderManager;
     private PublishManager publishManager;
     BroadcastReceiver tvBroadcastReceiver;
+    private ProductManager productManager;
 
     public IBinder onBind(Intent arg0) { return null; }
     @Override
@@ -77,21 +79,31 @@ public class WebService  extends Service {
         templateManager=new TemplateManager();
         serverHolderManager=new ServerHolderManager();
         publishManager=new PublishManager();
-//        FileConstants.DEFAULT_DIRECTORY =getDir("upload",Context.MODE_PRIVATE).getPath(); //这里重置默认的上传路径，上生产删掉
-//        FileConstants.DEFAULT_USB_PATH ="/data/user/0/com.cloud.cms"; //这里重置默认的U盘路径，上生产删掉
-//        testCopy();//测试复制，上生产删掉
+        productManager=new ProductManager();
+        //FileConstants.DEFAULT_DIRECTORY =getDir("upload",Context.MODE_PRIVATE).getPath(); //这里重置默认的上传路径，上生产删掉
+        //FileConstants.DEFAULT_USB_PATH ="/data/user/0/com.cloud.cms"; //这里重置默认的U盘路径，上生产删掉
+        //testCopy();//测试电子货架，上生产删掉
         assetsResourceList=new String []{"/favicon.ico","/css/.*","/js/.*","/system/.*","/images/.*"};
         derectoryResourceList=new String []{FileConstants.DEFAULT_DIRECTORY,FileConstants.DEFAULT_USB_PATH};
     }
 
     /**
-     * 测试复制，上生产删掉
+     * 测试电子货架，上生产删掉
      */
     private void testCopy(){
-        FileConstants.DEFAULT_USB_VIDEO_PATH=getDir("upload",Context.MODE_PRIVATE).getPath();//这里重置默认的usb 复制路径，上生产删掉
-        FileConstants.DEFAULT_TV_VIDEO_PATH=getDir("screenshot",Context.MODE_PRIVATE).getPath();
-        FileManager fileManager=new FileManager();
-        fileManager.copyDirectory(FileConstants.DEFAULT_USB_VIDEO_PATH,FileConstants.DEFAULT_TV_VIDEO_PATH);
+        FileConstants.DEFAULT_USB_PRODUCT_PATH=getDir("upload",Context.MODE_PRIVATE).getPath();//这里重置默认的usb 复制路径，上生产删掉
+        FileConstants.DEFAULT_TV_PRODUCT_PATH=getDir("product",Context.MODE_PRIVATE).getPath()+"/";
+//        FileManager fileManager=new FileManager();
+//        fileManager.copyDirectory(FileConstants.DEFAULT_USB_PRODUCT_PATH,FileConstants.DEFAULT_TV_PRODUCT_PATH);
+        String [] paths={"周黑鸭_01.jpg","周黑鸭_02.jpg","热干面_01.jpg","热干面_02.jpg","test_01.jpg","test_02.mp4"}; //01 资源在手机端显示的缩略图，02 资源在电视机上显示
+        for(String path:paths){
+            File file=new File(FileConstants.DEFAULT_TV_PRODUCT_PATH+path);
+            try{
+                file.createNewFile();
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }
     }
 
     private  void initService(){
@@ -200,6 +212,9 @@ public class WebService  extends Service {
                 case "/sys/publishHistory":     //发布历史
                     publishManager.showPublishHistory(response);
                     break;
+               case "/sys/productList":     //商品列表
+                   productManager.getAllProducts(response);
+                   break;
             }
         }catch (Exception e ){
             e.printStackTrace();

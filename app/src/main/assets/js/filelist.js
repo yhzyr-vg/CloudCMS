@@ -5,6 +5,7 @@
     initTable();
     //点击文件夹
 	 $("body").on("click", "tr", function(event){
+	    var $this=$(this);
 	    var isdir=$(this).data('isdir');
 	    var path=$(this).data('path');
 	    if(isdir){//如果是文件夹
@@ -12,7 +13,15 @@
 	       $("#parentDirLinkBox").show();
 	       initTable(path);
 	    }else{//如果是文件，执行直接打开操作
-	       openFile(path);
+	       var jsonData = {'path' : path } //路径
+            $.ajax({
+              			type : 'POST',
+              			url : "/sys/showFile",
+              			data : jsonData,
+              			success : function(dataStr) {
+                          $this.addClass("red").siblings().removeClass('red');
+              			}
+             });
 	    }
   	});
     //上一级目录
@@ -20,22 +29,6 @@
 	    initTable(back_path);
   	});
  })
-
- //打开文件
- function openFile(path){
-   //如果希望电视机也显示相应的文件，则需要另写后台响应代码
-        var jsonData = {'path' : path } //路径
-        $.ajax({
-   			type : 'POST',
-   			url : "/sys/showFile",
-   			data : jsonData,
-   			success : function(dataStr) {
-   			  // window.location.href=path;
-   			  // window.open(path); //在新窗口打开
-   			  showMessage("操作成功");
-   			}
-   		});
- }
 
 //初始化文件列表
  function initTable(path){
