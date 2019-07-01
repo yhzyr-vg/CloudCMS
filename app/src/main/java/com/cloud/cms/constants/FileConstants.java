@@ -28,7 +28,7 @@ public class FileConstants {
     /**
      * 默认的文件上传路径
      */
-    public static String  DEFAULT_DIRECTORY="/data/local/tmp/vg/";
+    public static String  DEFAULT_DIRECTORY="/data/local/tmp/vg";
 
     /**默认的usb 路径*/
     public static String DEFAULT_USB_PATH = "/mnt/usb/sda1";

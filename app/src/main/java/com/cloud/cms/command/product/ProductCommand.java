@@ -26,6 +26,20 @@ public class ProductCommand {
      * 商品资源类型 视频或图片  1 图片 2  视频
      */
     private String productResourceType;
+
+    /**
+     * 显示位置  01  手机  02  TV
+     */
+    private String position;
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
     public int getId() {
         return id;
     }
