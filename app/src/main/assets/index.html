@@ -57,20 +57,5 @@
 		</div>
 	</div>
 </div>
-
-<script>
-  $(function() {
-    //广域信发 发开dms
-	$('.wide-cms').on('click', function() {
-		$.ajax({
-			type : 'POST',
-			url : "/sys/dms",
-			success : function(data) {
-				alert(data)
-			}
-		});
-	})
- })
-</script>
 </body>
 </html>

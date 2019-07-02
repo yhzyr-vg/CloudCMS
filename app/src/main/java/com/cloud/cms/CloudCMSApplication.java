@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.cloud.cms.config.Config;
+import com.cloud.cms.constants.FileConstants;
 import com.cloud.cms.manager.DeviceManager;
 import com.cloud.cms.manager.PreferenceManager;
 import com.cloud.cms.sql.DatabaseHelper;
@@ -40,6 +41,13 @@ public class CloudCMSApplication extends Application {
     private void init(){
         PreferenceManager.init(context);
         DatabaseHelper.init(context);
+        FileConstants.DEFAULT_RESOURCE_PATH =getDir("res",Context.MODE_PRIVATE).getPath(); //默认的可访问资源路径 包括上传的文件，U盘复制的文件
+        FileConstants.DEFAULT_TV_PRODUCT_PATH=FileConstants.DEFAULT_RESOURCE_PATH+ "/commodity";   //从u盘 复制的商品路径
+        FileConstants.DEFAULT_UPLOAD_RESOURCE_PATH=FileConstants.DEFAULT_RESOURCE_PATH+ "/upload"; //包括上传的文件
+        File dest=new File(FileConstants.DEFAULT_UPLOAD_RESOURCE_PATH);
+        if(!dest.exists()){
+            dest.mkdir();
+        }
         if (Validator.isNullOrEmpty(Config.SERIAL_NUMBER) || "unknown".equals(Config.SERIAL_NUMBER)) {
             Config.SERIAL_NUMBER = "mac" + DeviceManager.getMacId(context);
         }
@@ -51,9 +59,9 @@ public class CloudCMSApplication extends Application {
         Config.IP = DeviceManager.getIP(context);
         Config.DIR_NAME = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/";
         Config.INSTALL_APK_PATH=getApplicationContext().getFilesDir().getAbsolutePath() + "/";
-        Config.DIR_CACHE=getDir("dms_download",Context.MODE_PRIVATE ).getPath()+File.separator;
-        Config.RESOURCE_INFO=getDir("dms_resource",Context.MODE_PRIVATE).getPath()+File.separator;
-        Config.DIR_SCREENSHOT=getDir("screenshot",Context.MODE_PRIVATE).getPath()+File.separator;
+//        Config.DIR_CACHE=getDir("dms_download",Context.MODE_PRIVATE ).getPath()+File.separator;
+//        Config.RESOURCE_INFO=getDir("dms_resource",Context.MODE_PRIVATE).getPath()+File.separator;
+//        Config.DIR_SCREENSHOT=getDir("screenshot",Context.MODE_PRIVATE).getPath()+File.separator;
 
         Config.PACKAGE_NAME=PackageUtils.getAppProcessName(context);
         Config.SCREEN_HEIGHT = ScreenUtil.getScreenHeight(context);
