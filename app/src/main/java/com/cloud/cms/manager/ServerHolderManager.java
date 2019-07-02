@@ -231,7 +231,7 @@ public class ServerHolderManager {
         if (resourceName.indexOf("?") > 0) {
             resourceName = resourceName.substring(0, resourceName.indexOf("?"));
         }
-       // Log.i(tag,"============getResource:"+resourceName);
+        Log.i(tag,"============getResource:"+resourceName);
         if(!TextUtils.isEmpty(getContentTypeByResourceName(resourceName))) {
             response.setContentType(getContentTypeByResourceName(resourceName));
         }

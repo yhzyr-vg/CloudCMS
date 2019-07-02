@@ -22,12 +22,40 @@
 	<!--公共css js end-->
 	<link rel="stylesheet" type="text/css"  href="/css/index.css">
 </head>
-<body>
-<div class="container">
+
+    <style type="text/css">
+		*{
+			font-size:25px;font-weight:600;
+		}
+		html,body{width:100%;height:100%;margin: 0px 0px;text-align:center;overflow:hidden}
+		.list-row{
+			width:45%;
+			float:left;
+			height:30%;
+			margin:2% 2.5%;
+			font-size:20px;
+			outline:none;
+			border:none;
+		}
+
+		a{
+			width:100%;
+			height:100%;
+		}
+		img{
+			height:inherit; 
+			width:inherit;
+		}
+
+	</style>
+
+
+<body style="background-image:url('images/index_bg.png');background-size:100% 100%;">
+<div class="container" style="height:85%;margin:15% 0% 0% 0%;">
 	<div class="menu">
 		<div class="list-row">
 			<a href="/system/filelist.html">
-				<img src="images/usb.png">
+				<img src="images/usb.png" width="">
 			</a>
 		</div>
 		<div class="list-row">
@@ -35,11 +63,11 @@
 				<img src="images/dtxf.png">
 			</a>
 		</div>
-		<div class="list-row wide-cms">
-			<a href="javascript:;">
-				<img src="images/gyxf.png">
-			</a>
-		</div>
+		<!-- <div class="list-row wide-cms"> -->
+			<!-- <a href="javascript:;"> -->
+				<!-- <img src="images/gyxf.png"> -->
+			<!-- </a> -->
+		<!-- </div> -->
 		<div class="list-row">
 			<a href="/system/publish_history.html">
 				<img src="images/lsfb.png">
@@ -50,7 +78,7 @@
 				<img src="images/dzhj.png">
 			</a>
 		</div>
-		<div class="list-row">
+		<div class="list-row" style="width:95%;">
 			<a href="/system/setting.html">
 				<img src="images/sz.png">
 			</a>

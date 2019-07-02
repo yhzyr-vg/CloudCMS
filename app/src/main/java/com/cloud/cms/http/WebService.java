@@ -82,7 +82,7 @@ public class WebService  extends Service {
         productManager=new ProductManager();
         //FileConstants.DEFAULT_DIRECTORY =getDir("upload",Context.MODE_PRIVATE).getPath(); //这里重置默认的上传路径，上生产删掉
         //FileConstants.DEFAULT_USB_PATH ="/data/user/0/com.cloud.cms"; //这里重置默认的U盘路径，上生产删掉
-        //testCopy();//测试电子货架，上生产删掉
+        testCopy();//测试电子货架，上生产删掉
         assetsResourceList=new String []{"/favicon.ico","/css/.*","/js/.*","/system/.*","/images/.*"};
         derectoryResourceList=new String []{FileConstants.DEFAULT_DIRECTORY,FileConstants.DEFAULT_USB_PATH};
     }
@@ -91,19 +91,19 @@ public class WebService  extends Service {
      * 测试电子货架，上生产删掉
      */
     private void testCopy(){
-        FileConstants.DEFAULT_USB_PRODUCT_PATH=getDir("upload",Context.MODE_PRIVATE).getPath();//这里重置默认的usb 复制路径，上生产删掉
-        FileConstants.DEFAULT_TV_PRODUCT_PATH=getDir("product",Context.MODE_PRIVATE).getPath()+"/";
-//        FileManager fileManager=new FileManager();
-//        fileManager.copyDirectory(FileConstants.DEFAULT_USB_PRODUCT_PATH,FileConstants.DEFAULT_TV_PRODUCT_PATH);
-        String [] paths={"周黑鸭_01.jpg","周黑鸭_02.jpg","热干面_01.jpg","热干面_02.jpg","test_01.jpg","test_02.mp4"}; //01 资源在手机端显示的缩略图，02 资源在电视机上显示
-        for(String path:paths){
-            File file=new File(FileConstants.DEFAULT_TV_PRODUCT_PATH+path);
-            try{
-                file.createNewFile();
-            }catch(Exception ex){
-                ex.printStackTrace();
-            }
-        }
+       // FileConstants.DEFAULT_USB_PRODUCT_PATH=getDir("upload",Context.MODE_PRIVATE).getPath();//这里重置默认的usb 复制路径，上生产删掉
+      //  FileConstants.DEFAULT_TV_PRODUCT_PATH=getDir("product",Context.MODE_PRIVATE).getPath()+"/";
+        FileManager fileManager=new FileManager();
+        fileManager.copyDirectory(FileConstants.DEFAULT_USB_PRODUCT_PATH,FileConstants.DEFAULT_TV_PRODUCT_PATH);
+//        String [] paths={"周黑鸭_01.jpg","周黑鸭_02.jpg","热干面_01.jpg","热干面_02.jpg","test_01.jpg","test_02.mp4"}; //01 资源在手机端显示的缩略图，02 资源在电视机上显示
+//        for(String path:paths){
+//            File file=new File(FileConstants.DEFAULT_TV_PRODUCT_PATH+path);
+//            try{
+//                file.createNewFile();
+//            }catch(Exception ex){
+//                ex.printStackTrace();
+//            }
+//        }
     }
 
     private  void initService(){
