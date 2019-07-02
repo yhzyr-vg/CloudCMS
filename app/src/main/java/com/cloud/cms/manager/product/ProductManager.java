@@ -67,32 +67,34 @@ public class ProductManager {
     public void saveProducts(List<ProductCommand> productCommandList,List<ProductCommand> productCommandTempList){
         productCommandList=getAllProducts(productCommandList,productCommandTempList);
         if(Validator.isNotNullOrEmpty(productCommandList)){
-            PreferenceManager.getInstance().setProducts(JSON.toJSONString(productCommandList));
-            String listStr=PreferenceManager.getInstance().getProducts();
-            if(Validator.isNotNullOrEmpty(listStr)){
-                List<ProductCommand> list= JSON.parseArray(listStr,ProductCommand.class);
-                if(Validator.isNotNullOrEmpty(list)){
-                    for(ProductCommand newProductCommand:productCommandList){
-                        boolean isExsit=false;
-                        for(ProductCommand oldProductCommand:list){
-                            if(newProductCommand.equals(oldProductCommand)&&newProductCommand.getPosition().equals(oldProductCommand)){//已存在,新的覆盖旧的
-                                oldProductCommand.setProductResource(newProductCommand.getProductResource());
-                                oldProductCommand.setThumbnail(newProductCommand.getThumbnail());
-                                oldProductCommand.setProductResourceType(newProductCommand.getProductResourceType());
-                                isExsit=true;
-                            }
-                        }
-                        if(!isExsit){
-                            list.add(newProductCommand);
-                        }
-                    }
-                    PreferenceManager.getInstance().setProducts(JSON.toJSONString(list));
-                }else{
-                    PreferenceManager.getInstance().setProducts(JSON.toJSONString(productCommandList));
-                }
-            }else{
-                PreferenceManager.getInstance().setProducts(JSON.toJSONString(productCommandList));
-            }
+              PreferenceManager.getInstance().setProducts(JSON.toJSONString(productCommandList));//这里是全部替换
+             // 覆盖
+//            String listStr=PreferenceManager.getInstance().getProducts();
+//            if(Validator.isNotNullOrEmpty(listStr)){
+//                List<ProductCommand> list= JSON.parseArray(listStr,ProductCommand.class);
+//                if(Validator.isNotNullOrEmpty(list)){
+//                    for(ProductCommand newProductCommand:productCommandList){
+//                        boolean isExsit=false;
+//                        for(ProductCommand oldProductCommand:list){
+//                            if(newProductCommand.getName().equals(oldProductCommand.getName())){//已存在,新的覆盖旧的
+//                                Log.i(tag,"==========newProductCommand "+newProductCommand.getName()+"  "+newProductCommand.getThumbnail()+"  "+oldProductCommand.getName());
+//                                oldProductCommand.setProductResource(newProductCommand.getProductResource());
+//                                oldProductCommand.setThumbnail(newProductCommand.getThumbnail());
+//                                oldProductCommand.setProductResourceType(newProductCommand.getProductResourceType());
+//                                isExsit=true;
+//                            }
+//                        }
+//                        if(!isExsit){
+//                            list.add(newProductCommand);
+//                        }
+//                    }
+//                    PreferenceManager.getInstance().setProducts(JSON.toJSONString(list));
+//                }else{
+//                    PreferenceManager.getInstance().setProducts(JSON.toJSONString(productCommandList));
+//                }
+//            }else{
+//                PreferenceManager.getInstance().setProducts(JSON.toJSONString(productCommandList));
+//            }
         }
     }
 

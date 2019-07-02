@@ -73,9 +73,11 @@ public class FileManager {
                                   }else{
                                       productCommandTempList.add(productCommand);
                                   }
+                              }else{
+                                  Log.e(tag, "copyFile error: productCommand null" + file.getName());
                               }
                           }else{
-                              Log.e(tag, "copyDirectory error:" + file.getName());
+                              Log.e(tag, "copyFile error:" + file.getName());
                           }
                   } else if (file.isDirectory()) {
                           File destFile = new File(dest, file.getName());
@@ -92,7 +94,8 @@ public class FileManager {
     public   String getNewFileName(String fileName){
         String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-        String	newFileName =df.format(new Date()) + "." + fileExt;
+        int n = (int)(Math.random()*1000);
+        String	newFileName =df.format(new Date()) +n+ "." + fileExt;
         return newFileName;
     }
 

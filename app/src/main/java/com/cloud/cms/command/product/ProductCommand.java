@@ -80,14 +80,16 @@ public class ProductCommand {
         this.productResourceType = productResourceType;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof ProductCommand) {
-            ProductCommand productCommand = (ProductCommand) this;
+            ProductCommand productCommand = (ProductCommand) obj;
             return (name.equals(productCommand.name));
         }
         return super.equals(obj);
     }
 
+    @Override
     public int hashCode() {
         ProductCommand productCommand = (ProductCommand) this;
         return name.hashCode();
