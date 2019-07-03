@@ -80,7 +80,7 @@ public class WebService  extends Service {
         serverHolderManager=new ServerHolderManager();
         publishManager=new PublishManager();
         productManager=new ProductManager();
-        FileConstants.DEFAULT_USB_PATH ="/data/user/0/com.cloud.cms"; //这里重置默认的U盘路径，上生产删掉
+        //FileConstants.DEFAULT_USB_PATH ="/data/user/0/com.cloud.cms"; //这里重置默认的U盘路径，上生产删掉
         //testCopy();//测试电子货架，上生产删掉
         assetsResourceList=new String []{"/favicon.ico","/css/.*","/js/.*","/system/.*","/images/.*"};
         derectoryResourceList=new String []{FileConstants.DEFAULT_RESOURCE_PATH,FileConstants.DEFAULT_USB_PATH};
