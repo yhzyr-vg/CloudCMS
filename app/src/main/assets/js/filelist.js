@@ -1,5 +1,4 @@
-  var back_path=null;//上一级目录
-  $(function() {
+ $(function() {
      $("#parentDirLinkBox").hide();
     //初始化文件列表
     initTable();
@@ -9,8 +8,6 @@
 	    var isdir=$(this).data('isdir');
 	    var path=$(this).data('path');
 	    if(isdir){//如果是文件夹
-	       back_path=$("#header").html();
-	       $("#parentDirLinkBox").show();
 	       initTable(path);
 	    }else{//如果是文件，执行直接打开操作
 	       var jsonData = {'path' : path } //路径
@@ -26,6 +23,11 @@
   	});
     //上一级目录
   	 $("body").on("click", "#parentDirLinkBox", function(event){
+  	    var path=$("#header").html();//当前级目录
+		if (path.substring(path.length - 1, path.length) == "/") {
+			path = path.substring(0, path.length - 1);
+		}
+		var back_path = path.substring(0, path.lastIndexOf('/'));
 	    initTable(back_path);
   	});
  })
@@ -50,6 +52,14 @@
 			success : function(dataStr) {
 			    var data=$.parseJSON(dataStr);
 			    $("#header").html(data.message);
+			    if(path==null){
+			      $(".homepath").html(data.message);
+			    }
+			    if($("#header").html()==$(".homepath").html()){
+			      $("#parentDirLinkBox").hide();
+			    }else{
+			      $("#parentDirLinkBox").show();
+			    }
 				if(data.result){
 				  var fileList=data.returnObject;
 				  for(var i=0;i<fileList.length;i++){

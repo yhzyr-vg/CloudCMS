@@ -24,18 +24,18 @@ public class FileConstants {
     public static final String MY_IMPORTED_AUDIO = "导入的音频";
     public static final String MY_IMPORTED_MUSIC = "导入的音乐";
 
-
-    /**
-     * 默认的文件上传路径
-     */
-    public static String  DEFAULT_DIRECTORY="/data/local/tmp/vg";
-
     /**默认的usb 路径*/
     public static String DEFAULT_USB_PATH = "/mnt/usb/sda1";
 
     /**默认的 usb 复制文件 路径*/
     public static String DEFAULT_USB_PRODUCT_PATH = DEFAULT_USB_PATH+"/commodity";
 
+    /**默认的资源路径*/
+    public static String  DEFAULT_RESOURCE_PATH;
+
     /**默认的 tv 保存 复制 文件路径*/
-    public static String DEFAULT_TV_PRODUCT_PATH = DEFAULT_DIRECTORY+"/commodity";
+    public static String DEFAULT_TV_PRODUCT_PATH;
+
+    /**默认的 tv 默认的文件上传路径*/
+    public static String DEFAULT_UPLOAD_RESOURCE_PATH;
 }
