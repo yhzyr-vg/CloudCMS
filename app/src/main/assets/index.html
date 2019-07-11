@@ -79,11 +79,31 @@
 			</a>
 		</div>
 		<div class="list-row" style="width:95%;">
-			<a href="/system/setting.html">
-				<img src="images/sz.png">
+			<!--a href="/system/setting.html">
+			-->
+		
+				<img src="images/sz.png" class="home_btn";>
 			</a>
 		</div>
 	</div>
 </div>
+<script>
+$(function(){
+$('.home_btn').on('click',function(){
+$.ajax({
+  type:'POST',
+   url:'/sys/home',
+   data:{
+   "home":"home"
+   },
+cache:false,
+success:function(data){
+alert(data)
+}
+});
+})
+
+})
+</script>
 </body>
 </html>

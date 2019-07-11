@@ -55,4 +55,6 @@ public class Config {
      * 服务端口号
      */
     public static final int SERVER_PORT=13521;
+
+    public static final String ORIENTATION_ACTION = "victgroup.action.orientation";
 }

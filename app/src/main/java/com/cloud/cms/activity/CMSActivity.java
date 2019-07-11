@@ -4,12 +4,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.cloud.cms.R;
@@ -17,7 +22,9 @@ import com.cloud.cms.command.TemplateCommand;
 import com.cloud.cms.config.Config;
 import com.cloud.cms.constants.ActionConstants;
 import com.cloud.cms.http.WebService;
+import com.cloud.cms.manager.ApManager;
 import com.cloud.cms.manager.PreferenceManager;
+import com.cloud.cms.manager.broadcast.USBBroadcastReceiver;
 import com.cloud.cms.manager.template.TemplateManager;
 import com.cloud.cms.util.NetworkUtil;
 import com.cloud.cms.util.Validator;
@@ -29,15 +36,35 @@ public class CMSActivity extends BaseActivity {
     private String tag="CMSActivity";
     private RelativeLayout main_layout;
     private BroadcastReceiver tvBroadcastReceiver;
+    private BroadcastReceiver usbBroadcastReceiver;
     private Context context;
+    int keycount=0;
     TemplateManager templateManager;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         main_layout = new RelativeLayout(this);
         context=this;
+        Log.i(tag,"热点状态"+ApManager.isApOn(context));
+        if(ApManager.isApOn(context)){
+        }else {
+            Log.i(tag,"开热点");
+            ApManager.openHotspot(context,"CMS信息发布","12345678");
+            new Handler().postDelayed(new Runnable(){
+                public void run() {
+                    //String ap=ApManager.getHotspotLocalIpAddress(context);
+
+                    Toast.makeText(getApplicationContext(),"发布地址:192.168.43.1:"+Config.SERVER_PORT,Toast.LENGTH_LONG).show();
+
+                    Log.i(tag,"======ip:"+NetworkUtil.getIPAddress(context)+":"+Config.SERVER_PORT);
+                }
+            }, 7000);
+        }
+
+
+
         templateManager=new TemplateManager();
-        Log.i(tag,"======ip:"+NetworkUtil.getIPAddress(context)+":"+Config.SERVER_PORT);
+        //Log.i(tag,"======ip:"+NetworkUtil.getIPAddress(context)+":"+Config.SERVER_PORT);
         setContentView(main_layout);
         Intent intent = new Intent(CMSActivity.this, WebService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -83,7 +110,15 @@ public class CMSActivity extends BaseActivity {
             }
         };
         registerReceiver(tvBroadcastReceiver,filter);
+
+        //U盘监听
+//        usbBroadcastReceiver=new USBBroadcastReceiver();
+//        IntentFilter usbfilter=new IntentFilter(ActionConstants.ACTION_MEDIA_MOUNTED);//u 盘插入
+//        filter.addAction(ActionConstants.ACTION_MEDIA_REMOVED);
+//        registerReceiver(usbBroadcastReceiver,filter);
     }
+
+
 
     /**
      * 加载模板
@@ -99,5 +134,25 @@ public class CMSActivity extends BaseActivity {
             unregisterReceiver(tvBroadcastReceiver);
             tvBroadcastReceiver=null;
         }
+        if(usbBroadcastReceiver!=null){
+            unregisterReceiver(usbBroadcastReceiver);
+            usbBroadcastReceiver=null;
+        }
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode==KeyEvent.KEYCODE_1){
+              keycount++;
+              if (keycount%3==0){
+
+            }
+
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
+
+
 }

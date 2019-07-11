@@ -59,7 +59,6 @@ public class WebService  extends Service {
     private TemplateManager templateManager;
     private ServerHolderManager serverHolderManager;
     private PublishManager publishManager;
-    BroadcastReceiver tvBroadcastReceiver;
     private ProductManager productManager;
 
     public IBinder onBind(Intent arg0) { return null; }
@@ -69,12 +68,11 @@ public class WebService  extends Service {
         context=this;
         init();
         initService();
-        initBrocastReceiver();
+
     }
 
     /**一些初始化*/
     private void init(){
-        tvBroadcastReceiver=new USBBroadcastReceiver();
         fileListManager=new FileListManager();
         templateManager=new TemplateManager();
         serverHolderManager=new ServerHolderManager();
@@ -105,8 +103,8 @@ public class WebService  extends Service {
     }
 
     private  void initService(){
-        //Intent intent = new Intent(this, PowerService.class);
-        //startService(intent);
+        Intent intent = new Intent(this, PowerService.class);
+        startService(intent);
         server.get("/", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
@@ -191,13 +189,13 @@ public class WebService  extends Service {
                     break;
                 case "/sys/dms":  //广域发布
                     Log.i(tag,"======================DMS");
-                    PackageManager packageManager = getPackageManager();
-                    Intent intent=new Intent();
-                    intent =packageManager.getLaunchIntentForPackage("com.victgroup.signup.dmsclient");
-                    intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    resultCommand.setResult(true);
-                    response.send(JSON.toJSONString(resultCommand));
+//                    PackageManager packageManager = getPackageManager();
+//                    Intent intent=new Intent();
+//                    intent =packageManager.getLaunchIntentForPackage("com.victgroup.signup.dmsclient");
+//                    intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+//                    startActivity(intent);
+//                    resultCommand.setResult(true);
+//                    response.send(JSON.toJSONString(resultCommand));
                     break;
                 case "/sys/publish":     //单体发布
                     templateCommand=templateManager.getTemplate(paramstr); //构建模板
@@ -211,7 +209,20 @@ public class WebService  extends Service {
                     publishManager.showPublishHistory(response);
                     break;
                case "/sys/productList":     //商品列表
+                   FileManager fileManager=new FileManager();
+                   fileManager.copyDirectory(FileConstants.DEFAULT_USB_PRODUCT_PATH,FileConstants.DEFAULT_TV_PRODUCT_PATH);//测试复制
                    productManager.getAllProducts(response);
+                   break;
+               case "/sys/home":     //返回桌面
+                   Log.i(tag,"======================HOME");
+                   Intent _Intent;
+
+                   ComponentName _ComponentName ;
+                   _Intent = new Intent();
+                   _ComponentName = new ComponentName("com.android.launcher","com.android.launcher2.Launcher");
+                   _Intent.setComponent(_ComponentName);
+                   _Intent.setFlags(_Intent.FLAG_ACTIVITY_NEW_TASK);
+                   startActivity(_Intent);
                    break;
             }
         }catch (Exception e ){
@@ -250,11 +261,7 @@ public class WebService  extends Service {
         }
     }
 
-    private void initBrocastReceiver(){
-        IntentFilter filter=new IntentFilter(ActionConstants.ACTION_MEDIA_MOUNTED);//u 盘插入
-        filter.addAction(ActionConstants.ACTION_MEDIA_REMOVED);
-        registerReceiver(tvBroadcastReceiver,filter);
-    }
+
 
 
     public void startapk(String pkg,String activity){
@@ -268,10 +275,6 @@ public class WebService  extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(tvBroadcastReceiver!=null){
-            unregisterReceiver(tvBroadcastReceiver);
-            tvBroadcastReceiver=null;
-        }
     }
 
     @Override
