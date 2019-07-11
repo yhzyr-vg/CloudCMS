@@ -25,8 +25,8 @@ public class FileConstants {
     public static final String MY_IMPORTED_MUSIC = "导入的音乐";
 
     /**默认的usb 路径*/
-    public static String DEFAULT_USB_PATH = "/mnt/usb/sda1";
-
+    //public static String DEFAULT_USB_PATH = "/mnt/usb/sda1";
+    public static String DEFAULT_USB_PATH = "/mnt/usbhost2";
     /**默认的 usb 复制文件 路径*/
     public static String DEFAULT_USB_PRODUCT_PATH = DEFAULT_USB_PATH+"/commodity";
 
