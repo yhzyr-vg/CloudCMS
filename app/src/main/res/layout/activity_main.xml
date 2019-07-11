@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     tools:context="MainActivity">
 
-    <TextView
-        android:id="@+id/tv_deviceName"
-        android:layout_width="354dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:text="" />
-
     <LinearLayout
         android:id="@+id/layout_progress"
         android:layout_width="384dp"
@@ -25,14 +17,6 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:max="200"
-            android:progress="0" />
-
         <TextView
             android:id="@+id/tv_prompt_isRegister"
             android:layout_width="wrap_content"
@@ -40,18 +24,8 @@
             android:layout_below="@id/progressBar"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:text="正在载入，请稍后。。。" />
+            android:text="欢迎登入CLOUD CMS" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_prompt_noRegister"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_progress"
-        android:layout_centerHorizontal="true"
-        android:text="请注册"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="30sp"
-        android:visibility="gone" />
 </RelativeLayout>
