@@ -46,6 +46,7 @@ import com.cloud.cms.http.BaseOkHttpClient;
 import com.cloud.cms.widget.CustomDialog;
 import com.cloud.license.config.TVConfig;
 import com.cloud.license.manager.LicenseManager;
+import com.cloud.license.util.CommonUtil;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -69,16 +70,20 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         context=this;
         init();
+
     }
 
     private void init(){
         // 广播监听license 校验的结果
         initBroadcastReceiver();
+        //获取设备id
+        String deviceId=DeviceManager.getMacId(context);
+        Log.i(tag,"========device:"+deviceId );
         //校验license
-        LicenseManager licenseManager=new LicenseManager(context);
-        licenseManager.setDelayTime(1*1000);//设置延迟时间。可自行调整 ，不设置默认15 秒
+        LicenseManager licenseManager=new LicenseManager(context,deviceId);
+        licenseManager.setDelayTime(5*1000);//设置延迟时间。可自行调整 ，不设置默认15 秒
        // licenseManager.setUserId(122);    //设置用户id  默认是131  请根据需要设置
-        licenseManager.checkLicense();
+        licenseManager.checkLicense();//校验license
     }
 
     /**

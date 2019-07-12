@@ -33,11 +33,14 @@ dependencies {
     //黄油刀
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.1'
     implementation 'com.alibaba:fastjson:1.2.44'
     implementation 'com.github.bumptech.glide:glide:3.8.0'
     implementation 'com.koushikdutta.async:androidasync:2.+'
-    implementation 'com.youth.banner:banner:1.4.10'  //最新版本
+    implementation 'com.youth.banner:banner:1.4.10'
+    //最新版本
+    implementation files('libs/cloud-license1.0.jar')
+    implementation files('libs/commons-codec.jar')
+    implementation files('libs/Zxing-core-3.2.0.jar')
 }
